@@ -149,7 +149,11 @@
 <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
 
 <script>
+  <script>
     const urlParams = new URLSearchParams(window.location.search);
+    
+    // 1. Capture the email variable passed from Typeform
+    const userEmail = urlParams.get('email') || "anonymous@company.com";
     
     const movies = {
         "The Hunger Games": parseInt(urlParams.get('hunger')) || 0,
@@ -197,24 +201,34 @@
         posterFrame.style.display = 'block';
     }
 
-    // === EDIT THIS SECTION WITH YOUR SPECIFIC GOOGLE FORM DETAILS ===
-    const googleFormSubmitURL = "https://docs.google.com/forms/d/e/1FAIpQLSdzApSjZbb__8NMeRF-f2P19bctZfdb2XiyDnC1haMfpb5luQ/formResponse"; 
-    const movieEntryId = "entry.454048091"; 
+    // === EDIT THIS SECTION WITH YOUR NEW GOOGLE FORM DETAILS ===
+    const googleFormSubmitURL = "https://docs.google.com/forms/d/e/1FAIpQLSflTNsEGlRxkh69vvcWvMsL_1sbzjlO8ZGVOcq_0CcBvCvP0Q/formResponse"; // MUST end in /formResponse
+    const emailEntryId = "entry.189373097"; // Your Email Short Answer field ID
+    const movieEntryId = "entry.1259170426"; // Your Movie Multiple Choice field ID
     // ==============================================================
 
-    // BUTTON 1 LOGIC
+    // BUTTON 1 LOGIC: Silent multi-field background form submission
     document.getElementById('vote-recommendation-btn').addEventListener('click', function() {
         const form = document.createElement('form');
         form.method = 'POST';
         form.action = googleFormSubmitURL;
         form.target = 'hidden_iframe';
 
+        // Pack Field 1: The User's Email Address
+        const emailInput = document.createElement('input');
+        emailInput.type = 'hidden';
+        emailInput.name = emailEntryId;
+        emailInput.value = userEmail;
+        form.appendChild(emailInput);
+
+        // Pack Field 2: The Calculated Movie Recommendation Choice
         const movieInput = document.createElement('input');
         movieInput.type = 'hidden';
         movieInput.name = movieEntryId;
         movieInput.value = quizWinner;
         form.appendChild(movieInput);
 
+        // Submit data package securely
         document.body.appendChild(form);
         form.submit();
         document.body.removeChild(form);
@@ -223,10 +237,7 @@
         document.getElementById('status-message').style.display = 'block';
     });
 
-    // BUTTON 2 LOGIC
-    const normalFormViewURL = googleFormSubmitURL.replace('/formResponse', '/viewform');
+    // BUTTON 2 LOGIC: Manual override redirect (Passes email forward so they don't have to re-type it manually!)
+    const normalFormViewURL = `${googleFormSubmitURL.replace('/formResponse', '/viewform')}?usp=pp_url&${emailEntryId}=${encodeURIComponent(userEmail)}`;
     document.getElementById('manual-override-btn').href = normalFormViewURL;
 </script>
-
-</body>
-</html>
