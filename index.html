@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Office Movie Night Match!</title>
+    <style>
+        body { font-family: 'Helvetica Neue', Arial, sans-serif; background-color: #141414; color: white; text-align: center; padding: 50px; }
+        .container { max-width: 600px; margin: 0 auto; background: #222; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        h1 { color: #E50914; font-size: 2.5rem; margin-bottom: 10px; }
+        .movie-title { font-size: 2rem; font-weight: bold; margin: 20px 0; color: #fff; }
+        .score-debug { margin-top: 30px; font-size: 0.8rem; color: #777; text-align: left; border-top: 1px solid #333; padding-top: 15px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Your Perfect Match Is...</h1>
+    <div id="winner-display" class="movie-title">Calculating...</div>
+    
+    <div class="score-debug">
+        <h3>Full Score Breakdown:</h3>
+        <ul id="score-list"></ul>
+    </div>
+</div>
+
+<script>
+    // 1. Grab the scores passed from Typeform's URL
+    const urlParams = new URLSearchParams(window.location.search);
+    
+    const movies = {
+        "The Hunger Games": parseInt(urlParams.get('hunger')) || 0,
+        "The Wizard of Oz": parseInt(urlParams.get('wizard')) || 0,
+        "Coraline": parseInt(urlParams.get('coraline')) || 0,
+        "The Truman Show": parseInt(urlParams.get('truman')) || 0,
+        "Mamma Mia": parseInt(urlParams.get('mamma')) || 0,
+        "Split": parseInt(urlParams.get('split')) || 0,
+        "10 Things I Hate About You": parseInt(urlParams.get('tenthings')) || 0,
+        "Gattaca": parseInt(urlParams.get('gattaca')) || 0,
+        "The Replacements": parseInt(urlParams.get('replacements')) || 0,
+        "Spiderman: Into the Spiderverse": parseInt(urlParams.get('spiderverse')) || 0,
+        "La La Land": parseInt(urlParams.get('lalaland')) || 0
+    };
+
+    // 2. Find the true mathematical winner
+    let winner = "";
+    let highestScore = -999; // Handles potential negative scores cleanly
+
+    for (const [movie, score] of Object.entries(movies)) {
+        if (score > highestScore) {
+            highestScore = score;
+            winner = movie;
+        }
+    }
+
+    // 3. Display the winner on screen
+    document.getElementById('winner-display').innerText = winner;
+
+    // 4. Output the raw scoreboard data for absolute transparency
+    const scoreList = document.getElementById('score-list');
+    for (const [movie, score] of Object.entries(movies)) {
+        const li = document.createElement('li');
+        li.innerText = `${movie}: ${score} pts`;
+        if(movie === winner) { li.style.color = "#E50914"; li.style.fontWeight = "bold"; li.innerText += " (Winner!)"; }
+        scoreList.appendChild(li);
+    }
+</script>
+
+</body>
+</html>
