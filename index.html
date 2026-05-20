@@ -5,14 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your Office Movie Night Match!</title>
     <style>
-        body { font-family: 'Helvetica Neue', Arial, sans-serif; background-color: #141414; color: white; text-align: center; padding: 50px; }
-        .container { max-width: 600px; margin: 0 auto; background: #222; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
-        h1 { color: #E50914; font-size: 2.2rem; margin-bottom: 10px; }
-        .movie-title { font-size: 2.5rem; font-weight: bold; margin: 25px 0; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.6); }
-        .btn-container { display: flex; flex-direction: column; gap: 15px; margin-top: 35px; align-items: center; }
-        .btn { display: block; width: 80%; padding: 14px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 1.1rem; text-align: center; box-sizing: border-box; transition: transform 0.1s, background 0.2s; }
+        body { font-family: 'Helvetica Neue', Arial, sans-serif; background-color: #141414; color: white; text-align: center; padding: 40px 20px; }
+        .container { max-width: 500px; margin: 0 auto; background: #222; padding: 30px; border-radius: 16px; box-shadow: 0 8px 30px rgba(0,0,0,0.6); }
+        h1 { color: #E50914; font-size: 2rem; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
+        .movie-title { font-size: 2.2rem; font-weight: bold; margin: 15px 0 25px 0; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
+        
+        /* Poster Styling */
+        .poster-container { width: 100%; max-width: 280px; margin: 0 auto 25px auto; border-radius: 10px; overflow: hidden; box-shadow: 0 5px 20px rgba(0,0,0,0.7); border: 1px solid #333; display: none; }
+        .poster-img { width: 100%; height: auto; display: block; }
+        
+        .btn-container { display: flex; flex-direction: column; gap: 12px; margin-top: 10px; align-items: center; width: 100%; }
+        .btn { display: block; width: 90%; padding: 14px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 1.05rem; text-align: center; box-sizing: border-box; transition: transform 0.1s, background 0.2s; border: none; }
         .btn:active { transform: scale(0.98); }
-        .btn-vote { background-color: #E50914; color: white; border: none; cursor: pointer; }
+        .btn-vote { background-color: #E50914; color: white; cursor: pointer; }
         .btn-vote:hover { background-color: #b80710; }
         .btn-custom { background-color: #444; color: #ccc; }
         .btn-custom:hover { background-color: #555; color: white; }
@@ -21,12 +26,15 @@
 <body>
 
 <div class="container">
-    <h1>Your Recommended Match Is:</h1>
+    <h1>Your Recommended Match:</h1>
     <div id="winner-display" class="movie-title">Calculating...</div>
+    
+    <div id="poster-frame" class="poster-container">
+        <img id="movie-poster" class="poster-img" src="" alt="Movie Poster">
+    </div>
     
     <div class="btn-container">
         <a id="vote-recommendation-btn" href="#" class="btn btn-vote">🍿 Vote for this Movie</a>
-        
         <a id="manual-override-btn" href="#" class="btn btn-custom">✏️ Choose my own movie instead</a>
     </div>
 </div>
@@ -48,6 +56,22 @@
         "La La Land": parseInt(urlParams.get('lalaland')) || 0
     };
 
+    // Database of official, high-quality public movie poster links
+    const posterImages = {
+        "The Hunger Games": "hunger.games.png",
+        "The Wizard of Oz": "wizard-of-oz.png",
+        "Coraline": "coraline.png",
+        "The Truman Show": "truman-show.jpg",
+        "Mamma Mia": "mamma-mia.png",
+        "Split": "split.png",
+        "10 Things I Hate About You": "10-things-i-hate-about-you.png",
+        "Gattaca": "gattaca.png",
+        "The Replacements": "replacements.png",
+        "Spiderman: Into the Spiderverse": "spiderman-into-the-spiderverse.png",
+        "La La Land": "la-la-land.png"
+    };
+
+    // Calculate the winner
     let quizWinner = "";
     let highestScore = -999;
     for (const [movie, score] of Object.entries(movies)) {
@@ -56,18 +80,25 @@
             quizWinner = movie;
         }
     }
+    
+    // Display Title
     document.getElementById('winner-display').innerText = quizWinner;
 
+    // Display Poster dynamically if it exists in our database
+    if (posterImages[quizWinner]) {
+        const posterFrame = document.getElementById('poster-frame');
+        const posterImg = document.getElementById('movie-poster');
+        posterImg.src = posterImages[quizWinner];
+        posterFrame.style.display = 'block'; // Make the image visible
+    }
+
     // === EDIT THIS SECTION WITH YOUR GOOGLE FORM LINK & ITEM ID ===
-    const googleFormBaseURL = "https://docs.google.com/forms/d/e/1FAIpQLSdzApSjZbb__8NMeRF-f2P19bctZfdb2XiyDnC1haMfpb5luQ/viewform"; // Base form link
-    const movieEntryId = "entry.454048091";  // Your Movie Dropdown Entry ID
+    const googleFormBaseURL = "https://docs.google.com/forms/d/e/.../viewform"; 
+    const movieEntryId = "entry.987654321";  
     // ==============================================================
 
-    // Configures Button 1 to auto-fill the choice field
     const automaticVoteURL = `${googleFormBaseURL}?usp=pp_url&${movieEntryId}=${encodeURIComponent(quizWinner)}`;
     document.getElementById('vote-recommendation-btn').href = automaticVoteURL;
-
-    // Configures Button 2 to just open the standard form link directly
     document.getElementById('manual-override-btn').href = googleFormBaseURL;
 </script>
 
