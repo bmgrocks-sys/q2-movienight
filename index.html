@@ -7,25 +7,31 @@
     <style>
         body { font-family: 'Helvetica Neue', Arial, sans-serif; background-color: #141414; color: white; text-align: center; padding: 50px; }
         .container { max-width: 600px; margin: 0 auto; background: #222; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
-        h1 { color: #E50914; font-size: 2.5rem; margin-bottom: 10px; }
-        .movie-title { font-size: 2rem; font-weight: bold; margin: 20px 0; color: #fff; }
-        .score-debug { margin-top: 30px; font-size: 0.8rem; color: #777; text-align: left; border-top: 1px solid #333; padding-top: 15px; }
+        h1 { color: #E50914; font-size: 2.2rem; margin-bottom: 10px; }
+        .movie-title { font-size: 2.5rem; font-weight: bold; margin: 25px 0; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.6); }
+        .btn-container { display: flex; flex-direction: column; gap: 15px; margin-top: 35px; align-items: center; }
+        .btn { display: block; width: 80%; padding: 14px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 1.1rem; text-align: center; box-sizing: border-box; transition: transform 0.1s, background 0.2s; }
+        .btn:active { transform: scale(0.98); }
+        .btn-vote { background-color: #E50914; color: white; border: none; cursor: pointer; }
+        .btn-vote:hover { background-color: #b80710; }
+        .btn-custom { background-color: #444; color: #ccc; }
+        .btn-custom:hover { background-color: #555; color: white; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>Your Perfect Match Is...</h1>
+    <h1>Your Recommended Match Is:</h1>
     <div id="winner-display" class="movie-title">Calculating...</div>
     
-    <div class="score-debug">
-        <h3>Full Score Breakdown:</h3>
-        <ul id="score-list"></ul>
+    <div class="btn-container">
+        <a id="vote-recommendation-btn" href="#" class="btn btn-vote">🍿 Vote for this Movie</a>
+        
+        <a id="manual-override-btn" href="#" class="btn btn-custom">✏️ Choose my own movie instead</a>
     </div>
 </div>
 
 <script>
-    // 1. Grab the scores passed from Typeform's URL
     const urlParams = new URLSearchParams(window.location.search);
     
     const movies = {
@@ -42,28 +48,27 @@
         "La La Land": parseInt(urlParams.get('lalaland')) || 0
     };
 
-    // 2. Find the true mathematical winner
-    let winner = "";
-    let highestScore = -999; // Handles potential negative scores cleanly
-
+    let quizWinner = "";
+    let highestScore = -999;
     for (const [movie, score] of Object.entries(movies)) {
         if (score > highestScore) {
             highestScore = score;
-            winner = movie;
+            quizWinner = movie;
         }
     }
+    document.getElementById('winner-display').innerText = quizWinner;
 
-    // 3. Display the winner on screen
-    document.getElementById('winner-display').innerText = winner;
+    // === EDIT THIS SECTION WITH YOUR GOOGLE FORM LINK & ITEM ID ===
+    const googleFormBaseURL = "https://docs.google.com/forms/d/e/1FAIpQLSdzApSjZbb__8NMeRF-f2P19bctZfdb2XiyDnC1haMfpb5luQ/viewform"; // Base form link
+    const movieEntryId = "entry.454048091";  // Your Movie Dropdown Entry ID
+    // ==============================================================
 
-    // 4. Output the raw scoreboard data for absolute transparency
-    const scoreList = document.getElementById('score-list');
-    for (const [movie, score] of Object.entries(movies)) {
-        const li = document.createElement('li');
-        li.innerText = `${movie}: ${score} pts`;
-        if(movie === winner) { li.style.color = "#E50914"; li.style.fontWeight = "bold"; li.innerText += " (Winner!)"; }
-        scoreList.appendChild(li);
-    }
+    // Configures Button 1 to auto-fill the choice field
+    const automaticVoteURL = `${googleFormBaseURL}?usp=pp_url&${movieEntryId}=${encodeURIComponent(quizWinner)}`;
+    document.getElementById('vote-recommendation-btn').href = automaticVoteURL;
+
+    // Configures Button 2 to just open the standard form link directly
+    document.getElementById('manual-override-btn').href = googleFormBaseURL;
 </script>
 
 </body>
